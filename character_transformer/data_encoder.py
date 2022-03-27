@@ -29,7 +29,7 @@ input_vectorisation = lambda text: padded(values=encode(text), max_length=ModelS
 output_vectorisation =  lambda text: padded(values=encode(text), max_length=1+ModelSettings.SEQUENCE_LENGTH.value) 
 
 def get_training_pairs(size:Optional[int]=None) -> Generator[Tuple[Dict[str,str],str],None,None]:
-    for input_condition,output_sentence in Reader(size).read(skip_keywords_greater_than=ModelSettings.SEQUENCE_LENGTH.value-2):
+    for input_condition,output_sentence in Reader(size).read(shuffled=False,skip_keywords_greater_than=ModelSettings.SEQUENCE_LENGTH.value-2):
         encoder_input_ids = input_vectorisation(format_condition(*input_condition))
         sentence_ids = output_vectorisation(format_sentence(output_sentence))
         decoder_input_ids = sentence_ids[:,:-1]

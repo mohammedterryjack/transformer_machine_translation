@@ -14,6 +14,7 @@ from character_transformer.model_layers.transformer_decoder import TransformerDe
 from character_transformer.model_layers.transformer_encoder import TransformerEncoder
 from character_transformer.utils import ModelSettings
 from character_transformer.data_encoder import format_condition, input_vectorisation, output_vectorisation
+from character_transformer.data_encoder import get_training_pairs
 
 class CharacterTransformer:
     def __init__(self) -> None:
@@ -21,9 +22,9 @@ class CharacterTransformer:
         if exists(ModelSettings.MODEL_PATH.value): 
             self.model.load_weights(ModelSettings.MODEL_PATH.value)
 
-    def train(self,data:Dataset, validation_data:Dataset) -> None:
+    def train(self) -> None:
         for _ in range(ModelSettings.EPOCHS.value):
-            self.model.fit(data, epochs=1, validation_data=validation_data)
+            self.model.fit(get_training_pairs(), epochs=1, validation_data=get_training_pairs(600))
             self.save()
             keywords = []
             print(self.generate("statement","positive",keywords))
