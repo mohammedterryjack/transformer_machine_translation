@@ -9,13 +9,13 @@ from tensorflow.data import Dataset
 from numpy import argmax, ndarray, argsort
 from numpy.random import choice
 
-from word_transformer.model_layers.positional_embedding import PositionalEmbedding
-from word_transformer.model_layers.transformer_decoder import TransformerDecoder
-from word_transformer.model_layers.transformer_encoder import TransformerEncoder
-from word_transformer.utils import ModelSettings, TOKENISER
-from word_transformer.data_encoder import format_condition, input_vectorisation, output_vectorisation
+from character_transformer.model_layers.positional_embedding import PositionalEmbedding
+from character_transformer.model_layers.transformer_decoder import TransformerDecoder
+from character_transformer.model_layers.transformer_encoder import TransformerEncoder
+from character_transformer.utils import ModelSettings
+from character_transformer.data_encoder import format_condition, input_vectorisation, output_vectorisation
 
-class ConditionalGeneratorTransformer:
+class CharacterTransformer:
     def __init__(self) -> None:
         self.model = self._build_model()
         if exists(ModelSettings.MODEL_PATH.value): 
@@ -32,7 +32,7 @@ class ConditionalGeneratorTransformer:
             print(self.generate("question","positive",keywords))
             print(self.generate("question","neutral",keywords))
             print(self.generate("question","negative",keywords))
-            
+
     def save(self) -> None:
         self.model.save_weights(ModelSettings.MODEL_PATH.value)
 
@@ -48,8 +48,8 @@ class ConditionalGeneratorTransformer:
 
             #predicted_token_id = self._greedy_decode(logits, position)
             predicted_token_id = self._top_k_decode(logits, position, 10)
-            predicted_token = str(TOKENISER.decode([predicted_token_id])) 
-            decoded_sentence += f" {predicted_token}"
+            predicted_token = ModelSettings.VOCABULARY.value[predicted_token_id]
+            decoded_sentence += predicted_token
 
         return decoded_sentence
   
@@ -77,7 +77,7 @@ class ConditionalGeneratorTransformer:
         projected_decoder_inputs = TransformerDecoder()(contextualised_decoder_inputs, encoded_inputs)
         decoder_logits = Dropout(ModelSettings.DROPOUT_RATE.value)(projected_decoder_inputs)
 
-        decoder_outputs = Dense(2+len(TOKENISER), activation="softmax")(decoder_logits)
+        decoder_outputs = Dense(len(ModelSettings.VOCABULARY.value), activation="softmax")(decoder_logits)
         decoder = Model([decoder_inputs, encoded_inputs], decoder_outputs)
 
         transformer_outputs = decoder([decoder_inputs, encoder_outputs])

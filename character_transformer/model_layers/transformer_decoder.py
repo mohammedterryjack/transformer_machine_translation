@@ -2,7 +2,7 @@ from tensorflow.keras.layers import Layer, MultiHeadAttention, Dense, LayerNorma
 from tensorflow import cast, newaxis, shape, range, minimum, reshape, concat, tile, expand_dims, constant
 from keras import Sequential
 
-from word_transformer.utils import ModelSettings
+from character_transformer.utils import ModelSettings
 
 class TransformerDecoder(Layer):
     def __init__(self):

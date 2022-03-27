@@ -2,7 +2,7 @@ from tensorflow.keras.layers import Layer, MultiHeadAttention, Dense, LayerNorma
 from tensorflow import cast, newaxis
 from keras import Sequential
 
-from word_transformer.utils import ModelSettings
+from character_transformer.utils import ModelSettings
 
 class TransformerEncoder(Layer):
     def __init__(self) -> None:
